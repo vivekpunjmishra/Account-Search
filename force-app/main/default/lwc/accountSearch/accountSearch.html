@@ -1,0 +1,43 @@
+<template>
+    <lightning-card title="Custom Account Search">
+        <lightning-layout multiple-rows="true" vertical-align="Start">
+            <lightning-layout-item size="6" padding="around-small">
+                <div class="slds-box slds-theme_default">
+                    <lightning-layout multiple-rows="true" vertical-align="end">
+                        <lightning-layout-item size="9" padding="around-small">
+                            <!--Input text to Search Account-->
+                            <lightning-input class="slds-p-top_large" type="Search" placeholder="Search..."
+                                value={searchKey} onchange={handelSearchKey}>
+                            </lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="3">
+                            <lightning-combobox class="slds-p-bottom_small" name="progress" label="Sort By"
+                                value={value} options={options} onchange={handleChange}></lightning-combobox>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                    <lightning-card>
+                        <lightning-datatable key-field="id" data={visibleAcc} columns={columns}
+                            onrowaction={showView} hide-checkbox-column="true">
+                        </lightning-datatable>
+                    </lightning-card>
+                    <div slot="footer" class="slds-var-m-horizontal_medium">
+                        <c-pagination records={accounts} record-size="4" onupdate={updateAccountHandler}></c-pagination>
+                    </div>
+                </div>
+            </lightning-layout-item>
+            <!-- View Component -->
+            <lightning-layout-item size="6" padding="around-small">
+                <div class="slds-var-m-horizontal_medium">
+                    <div class="slds-var-m-around_medium">
+                        <template if:true={showViewComponent}>
+                            <div slot="footer" class="slds-var-m-horizontal_medium">
+                                <c-view record={accounts} recid={recrdsID}  onacclist={submitDetails}></c-view>
+                                <!-- ongetsearchvalue={updateAccountHandler} -->
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </lightning-layout-item>
+        </lightning-layout>
+    </lightning-card>
+</template>

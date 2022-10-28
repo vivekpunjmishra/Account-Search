@@ -1,0 +1,198 @@
+<!-- sldsValidatorIgnore -->
+<template>
+    <lightning-card title="Account Detail" icon-name="standard:record">
+        <lightning-layout multiple-rows="true" vertical-align="end">
+            <lightning-layout-item size="12" flexibility="grow">
+                <div class="slds-box slds-theme_default">
+                    <template if:true={wireAccount}>
+                        <template for:each={wireAccount.data} for:item="acc">
+                            <div key={acc.id}>
+                            <label class="slds-text-body_small"><b>Account Name :</b> {acc.Name} </label><br>
+                            <label class="slds-text-body_small"><b>Employees Count :</b> {acc.NumberOfEmployees} </label><br>
+                            <label class="slds-text-body_small"><b>Type :</b> {acc.Type} </label>
+                            </div>
+                        </template>
+                    </template>
+                    <div class="slds-p-top_x-large slds-align_absolute-center">
+                        <lightning-button  label="Edit Account" onclick={openModal}>
+                        </lightning-button>
+                        <lightning-button class="slds-p-left_xx-large" label="New Account" onclick={openAddAccountModal}>
+                        </lightning-button>
+                        <lightning-button class="slds-p-left_xx-large" label="Add Contact" onclick={openAddContactModal} >
+                        </lightning-button>
+                    </div> 
+                    <!-- sldsValidatorIgnoreNextLine -->
+                    <div class="slds-p-top_medium">       
+                    <lightning-datatable             
+                        data={contactsList}
+                        onrowaction={handleRowAction}
+                        columns={columns}
+                        key-field="id"
+                        hide-checkbox-column>
+                    </lightning-datatable>     
+                    </div>
+                    <div>
+                     <!-- Insert Account Record -->
+
+            <template if:true={isNewAccountModal}>
+                <!--New Account  Modal/Popup Box LWC starts here -->
+                <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-03" aria-modal="true" aria-describedby="modal-content-id-3" class="slds-modal slds-fade-in-open">
+                    <div class="slds-modal__container">
+                        <!-- Modal/Popup Box LWC header here -->
+                        <header class="slds-modal__header">
+                            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeAddAccountModal}>
+                                <lightning-icon icon-name="utility:close"
+                                    alternative-text="close"
+                                    variant="inverse"
+                                    size="small" ></lightning-icon>
+                                <span class="slds-assistive-text">Close</span>
+                            </button>
+                            <h2 id="modal-heading-03" class="slds-text-heading_medium slds-hyphenate">New Account</h2>
+                        </header>
+                        <!-- Modal/Popup Box LWC body starts here -->
+                        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-3">
+                            <lightning-input label="Account Name :" name='Name' onchange={handleNameChange}></lightning-input>
+                            <lightning-input label="Employees Count :" name='NumberOfEmployees' onchange={handleEmployeesChange}></lightning-input>
+                            <lightning-input label="Type :" name='Type' onchange={handleTypeChange} ></lightning-input>
+                        </div>
+                        <!-- Modal/Popup Box LWC footer starts here -->
+                        <footer class="slds-modal__footer ">
+                            <button class="slds-button slds-button_neutral" onclick={closeAddAccountModal} title="Cancel">Cancel</button>
+                            <button class="slds-button slds-button_brand" onclick={onCreateRecord} title="Save">Save</button>
+                        </footer>
+                    </div>
+                </section>
+            </template>
+        </div>
+                <div>
+                    <template if:true={isModalOpen}>
+                        <!--Account  Modal/Popup Box LWC starts here -->
+                        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-02" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                            <div class="slds-modal__container">
+                                <!-- Modal/Popup Box LWC header here -->
+                                <header class="slds-modal__header">
+                                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal}>
+                                        <lightning-icon icon-name="utility:close"
+                                            alternative-text="close"
+                                            variant="inverse"
+                                            size="small" ></lightning-icon>
+                                        <span class="slds-assistive-text">Close</span>
+                                    </button>
+                                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Account Details</h2>
+                                </header>
+                                <!-- Modal/Popup Box LWC body starts here -->
+                                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                                    <template if:true={wireAccount}>
+                                        <template for:each={wireAccount.data} for:item="acc">
+                                            <div key={acc.id}>
+                                                <lightning-input label="Account Name :" name='Name'  value={acc.Name}></lightning-input>
+                                                <lightning-input label="Employees Count :" name='NumberOfEmployees' value={acc.NumberOfEmployees}></lightning-input>
+                                                <lightning-input label="Type :" name='Type'  value={acc.Type}></lightning-input>
+                                            </div>
+                                        </template>
+                                    </template>
+                                </div>
+                                <!-- Modal/Popup Box LWC footer starts here -->
+                                <footer class="slds-modal__footer ">
+                                    <button class="slds-button slds-button_neutral" onclick={closeModal} title="Cancel">Cancel</button>
+                                    <button class="slds-button slds-button_brand" onclick={submitDetails} title="Save">Save</button>
+                                </footer>
+                            </div>
+                        </section>
+                    </template>
+                </div>
+                <!--$$$$$$$ Add Contact Modal $$$$$$$$$$$-->
+                <div>
+                        <!-- Modal Pop Up For Contact Add Action -->
+                        <template if:true={isNewContactModal}>
+                            <!-- Modal/Popup Box LWC starts here -->
+                            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-04" aria-modal="true"
+                                aria-describedby="modal-content-id-4" class="slds-modal slds-fade-in-open">
+                                <div class="slds-modal__container">
+                                    <!-- Modal/Popup Box LWC header here -->
+                                    <header class="slds-modal__header">
+                                        <button
+                                            class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                                            title="Close" onclick={closeAddContactModal}>
+                                            <lightning-icon icon-name="utility:close" alternative-text="close"
+                                                variant="inverse" size="small"></lightning-icon>
+                                            <span class="slds-assistive-text">Close</span>
+                                        </button>
+                                        <h2 id="modal-heading-04" class="slds-text-heading_medium slds-hyphenate">Add Contact</h2>
+                                    </header>
+                                    <!-- Modal/Popup Box LWC body starts here (For Account Details Edit) -->
+                                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-4">
+                                        <lightning-input label="First Name :" name='First Name' onchange={handleFirstNameChange}></lightning-input>
+                                        <lightning-input label="Last Name :" name='Last Name' onchange={handleLastNameChange}></lightning-input>
+                                        <lightning-input label="Email :" name='Email' onchange={handleEmailChange} ></lightning-input>
+                                    </div>
+                                    <!-- Modal/Popup Box LWC footer starts here -->
+                                    <footer class="slds-modal__footer ">
+                                        <button class="slds-button slds-button_neutral" onclick={closeAddContactModal}
+                                            title="Cancel">Cancel</button>
+                                        <button class="slds-button slds-button_brand" onclick={onAddContact}
+                                            title="Save">Save</button>
+                                    </footer>
+                                </div>
+                            </section>
+                            <div class="slds-backdrop slds-backdrop_open"></div>
+                        </template>
+                    </div>
+                     <!-- Modal Pop Up For Contact Details Edit Action -->
+                     <template if:true={isEditModalOpen}>
+                        <!-- Modal/Popup Box LWC starts here -->
+                        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                            aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+                            <div class="slds-modal__container">
+                                <!-- Modal/Popup Box LWC header here -->
+                                <header class="slds-modal__header">
+                                    <button
+                                        class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                                        title="Close" onclick={closeEditModal}>
+                                        <lightning-icon icon-name="utility:close" alternative-text="close"
+                                            variant="inverse" size="small"></lightning-icon>
+                                        <span class="slds-assistive-text">Close</span>
+                                    </button>
+                                    <h2 id="modal-heading-02" class="slds-text-heading_medium slds-hyphenate">Edit Contact</h2>
+                                </header>
+                                <!-- Modal/Popup Box LWC body starts here (For Account Details Edit) -->
+                                <div class="slds-modal__content slds-var-p-around_medium" id="modal-content-id-2">
+                                    <p data-id="message">{message}</p>
+                                    <template if:true={conList}>
+                                        <template for:each={conList} for:item="con">
+                                            <div key={con.id}>
+                                                <lightning-input label="First Name :" name="fNames" value={con.FirstName}>
+                                                </lightning-input>
+                                                <lightning-input label="Last Name :" name="lNames" value={con.LastName}>
+                                                </lightning-input>
+                                                <lightning-input label="Email :" name="emails" value={con.Email}>
+                                                </lightning-input>
+                                            </div>
+                                        </template>
+                                    </template>
+                                </div>
+                                <!-- Modal/Popup Box LWC footer starts here -->
+                                <footer class="slds-modal__footer ">
+                                    <button class="slds-button slds-button_neutral" onclick={closeEditModal}
+                                        title="Cancel">Cancel</button>
+                                    <button class="slds-button slds-button_brand" onclick={submitContactDetails}
+                                        title="Save">Save</button>
+                                </footer>
+                            </div>
+                        </section>
+                        <div class="slds-backdrop slds-backdrop_open"></div>
+                    </template>
+            </div>
+            <!-- #######       Spinner  Start   ############-->
+            <div class="spinner">
+                <template if:true={isLoaded}>
+                     <lightning-spinner alternative-text="Loading" variant="brand" size="medium">                        
+                     </lightning-spinner>                       
+                </template>                       
+            </div>
+            <!-- @@@@@@@ Spinner ended @@@@@@@@@@-->
+
+            </lightning-layout-item>
+        </lightning-layout>
+    </lightning-card>
+</template>
