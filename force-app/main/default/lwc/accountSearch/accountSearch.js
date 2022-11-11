@@ -62,7 +62,7 @@ export default class AccountSearch extends LightningElement {
         })
         .catch( error=>{
             this.accounts = null;
-        });
+        })
     }
     // Get Account data from apex for datatable
     @wire(getAccountData)
